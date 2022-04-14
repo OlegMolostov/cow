@@ -33,6 +33,7 @@ public class RegistrationController {
             model.put("message","User exists!");
             return "registration";
         }
+        System.out.println("geleo");
         user.setActive(true);
         user.setRoles(Collections.singleton(Role.USER));
 
