@@ -1,59 +1,64 @@
 package cowgame.Controllers;
 
 import cowgame.entity.Game;
+
+
+import cowgame.repos.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+
 import java.util.Arrays;
 
+
 @Controller
-@SessionAttributes(types = Game.class)
+
 @RequestMapping("/game")
 public class GameController {
 
-    @GetMapping
+    @Autowired
+    UserRepo userRepo;
+
+    @GetMapping()
     public String newGame(HttpSession session, Model model) {
-//        Game game=new Game();
         Game game = (Game) session.getAttribute("game");
-        if (game == null) {
+        if (game == null ) {
            game = new Game();
         }
-
-        System.out.println(Arrays.toString(game.getNumber()));
         session.setAttribute("game", game);
         model.addAttribute("game", game);
         return "Game";
     }
 
-    @GetMapping("/test")
-    public String test(Model model) {
-        Game game = new Game();
 
-        model.addAttribute("game", game);
-        return "test";
-    }
 
     @PostMapping
+    public String doTry(HttpSession session, @RequestParam("number") String number, Model model, Authentication authentication) {
 
-    public String DoTry(HttpSession session, @RequestParam("number") String number, Model model) {
-        System.out.println(number);
         Game game = (Game) session.getAttribute("game");
-        System.out.println(Arrays.toString(game.getNumber()));
-        for (int i = 0; i < game.getTries().size(); i++) {
-            System.out.println(game.getTries().get(i).getBull());
-            System.out.println(game.getTries().get(i).getCow());
-            System.out.println(game.getTries().get(i).getNumber());
-        }
+        System.out.println(game.getNumber());
 
         game.addTry(number);
+        if (game.isVictory()){
+            userRepo.setUpdate((long)game.getTries().size(),authentication.getName());
+        }
         session.setAttribute("game", game);
         model.addAttribute("game", game);
-//        return "redirect:Game";
+        return "redirect:/game";
+    }
 
-        return "redirect:/";
+    @PostMapping("/again")
+    public String again(HttpSession session){
+        Game game = (Game) session.getAttribute("game");
+        game=null;
+        session.setAttribute("game", game);
 
-
+        return "redirect:/game";
     }
 }

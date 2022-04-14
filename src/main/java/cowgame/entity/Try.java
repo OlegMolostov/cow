@@ -18,14 +18,17 @@ public class Try {
         return bull+"Б"+cow+"К";
     }
 
-    public Try(String number, int[] arr) {
+
+
+    public Try(String number, String answer) {
         this.number = number;
 
         for (int i = 0; i < 4; i++) {
-            if (number.contains(arr[i] + "")){
+            if (number.contains(String.valueOf(answer.charAt(i)))){
                 this.cow++;
             }
-            if (arr[i] == Integer.parseInt(String.valueOf(number.charAt(i)))) {
+            if (answer.charAt(i) == number.charAt(i)) {
+
                 this.bull++;
             }
         }
